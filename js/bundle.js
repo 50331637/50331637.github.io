@@ -74251,7 +74251,7 @@ window.Laya=(function(window,document){
 			laya.display.Scene.prototype.createChildren.call(this);
 			this.createView(PlayViewUI.uiView);
 		}
-		PlayViewUI.uiView={"type":"View","props":{"width":640,"height":1136},"compId":2,"child":[{"type":"Sprite","props":{"width":640,"texture":"comp/white.png","height":1136,"sizeGrid":"8,8,9,7"},"compId":3},{"type":"Sprite","props":{"width":640,"var":"bgVideo","texture":"main/block.png","height":380},"compId":15},{"type":"Image","props":{"y":10,"x":10,"width":50,"var":"imgBack","skin":"main/back2.png","height":50},"compId":13},{"type":"Label","props":{"y":391,"x":12.5,"var":"txtTime","text":"2019.10.10","fontSize":30,"font":"SimHei","color":"#000000"},"compId":6},{"type":"Label","props":{"y":391,"x":580,"var":"txtContent","text":"简介","fontSize":30,"font":"SimHei","color":"#000000"},"compId":7},{"type":"List","props":{"y":438,"x":14,"width":612,"var":"listvideo","vScrollBarSkin":" ","repeatX":2,"height":650,"elasticEnabled":true},"compId":8,"child":[{"type":"VideoItemView","props":{"y":26,"x":0,"width":320,"scaleY":0.45,"scaleX":0.45,"runtime":"script.ui.main.VideoItemUI","name":"render","height":150},"compId":9}]},{"type":"Sprite","props":{"y":0,"x":0,"width":640,"var":"spBuy","height":380},"compId":17,"child":[{"type":"Label","props":{"y":208,"x":94,"text":"VIP可观看完整视频","fontSize":50,"color":"#ffffff"},"compId":16},{"type":"Button","props":{"y":278,"x":256,"var":"btnVip","skin":"comp/button.png","labelSize":20,"labelFont":"SimHei","labelColors":"#ffffff,#ffffff,#ffffff,#ffffff","label":"前往购买"},"compId":20}]}],"loadList":["comp/white.png","main/block.png","main/back2.png","comp/button.png"],"loadList3D":[]};
+		PlayViewUI.uiView={"type":"View","props":{"width":640,"height":1136},"compId":2,"child":[{"type":"Sprite","props":{"y":-2,"x":0,"width":640,"texture":"comp/white.png","height":1136,"sizeGrid":"8,8,9,7"},"compId":3},{"type":"Sprite","props":{"y":0,"x":0,"width":640,"var":"bgVideo","texture":"main/block.png","height":380},"compId":15},{"type":"Image","props":{"y":26,"x":0,"width":50,"var":"imgBack","skin":"main/back2.png","height":50},"compId":13},{"type":"Label","props":{"y":389,"x":12.5,"var":"txtTime","text":"2019.10.10","fontSize":30,"font":"SimHei","color":"#000000"},"compId":6},{"type":"Label","props":{"y":387,"x":580,"var":"txtContent","text":"简介","fontSize":30,"font":"SimHei","color":"#000000"},"compId":7},{"type":"List","props":{"y":438,"x":14,"width":612,"var":"listvideo","vScrollBarSkin":" ","repeatX":2,"height":650,"elasticEnabled":true},"compId":8,"child":[{"type":"VideoItemView","props":{"y":26,"x":0,"width":320,"scaleY":0.45,"scaleX":0.45,"runtime":"script.ui.main.VideoItemUI","name":"render","height":150},"compId":9}]},{"type":"Sprite","props":{"y":83,"x":0,"width":640,"var":"spBuy","height":298},"compId":17,"child":[{"type":"Label","props":{"y":77,"x":104.70458984375,"text":"VIP可观看完整视频","strokeColor":"#000000","stroke":1,"fontSize":50,"color":"#ffffff"},"compId":16},{"type":"Button","props":{"y":147,"x":267,"var":"btnVip","skin":"comp/button.png","labelSize":20,"labelFont":"SimHei","labelColors":"#ffffff,#ffffff,#ffffff,#ffffff","label":"前往购买"},"compId":20}]}],"loadList":["comp/white.png","main/block.png","main/back2.png","comp/button.png"],"loadList3D":[]};
 		return PlayViewUI;
 	})(View)
 
@@ -78484,6 +78484,7 @@ window.Laya=(function(window,document){
 			this.videoElement=null;
 			this.btnBackEle=null;
 			this.imageEle=null;
+			this.buyEle=null;
 			this.reference=null;
 			this.videoImgs=[1,2,3,4,5,6,7];
 			PlayUI.__super.call(this);
@@ -78512,13 +78513,6 @@ window.Laya=(function(window,document){
 			}
 			Laya.stage.on("resize",this.videoElement,Utils.fitDOMElementInArea,[this.videoElement,this.reference,0,0,this.reference.width,this.reference.height]);
 			Utils.fitDOMElementInArea(this.videoElement,this.reference,0,0,this.reference.width,this.reference.height);
-			if(!this.imageEle){
-				this.imageEle=Browser.document.createElement('img');
-				this.imageEle.type="image";
-				this.imageEle.style.width=50;
-				this.imageEle.style.height=50;
-				this.imageEle.style.zInddex=Render.canvas.style.zIndex+1;
-			}
 			this.timer.once(50,this,this.onOnce);
 			this.listvideo.array=this.videoImgs;
 			this.timer.loop(50,this,this.onLoop);
@@ -78526,14 +78520,34 @@ window.Laya=(function(window,document){
 		__proto.onLoop=function(){
 			if(this.videoElement.currentTime >=60){
 				this.videoElement.pause();
+				if(!this.buyEle){
+					this.buyEle=Browser.document.createElement('img');
+					this.buyEle.type="image";
+					this.buyEle.style.zInddex=Render.canvas.style.zIndex+1;
+					var htmlImg=this.spBuy.drawToCanvas(this.spBuy.width,this.spBuy.height,this.spBuy.x,this.spBuy.y);
+					this.buyEle.src=htmlImg.toBase64("image/png",1);
+					Laya.stage.on("resize",this.buyEle,Utils.fitDOMElementInArea,[this.buyEle,this.spBuy,0,0,this.spBuy.width,this.spBuy.height]);
+					Utils.fitDOMElementInArea(this.buyEle,this.spBuy,0,0,this.spBuy.width,this.spBuy.height);
+					this.buyEle.onclick=function (e){
+						console.log("点击购买！！！");
+					}
+				}
+				if(!this.buyEle.parentNode)Browser.document.body.appendChild(this.buyEle);
 			}
 		}
 		__proto.onOnce=function(){
-			var htmlImg=this.imgBack.drawToCanvas(this.imgBack.width,this.imgBack.height,0,0);
+			if(!this.imageEle){
+				this.imageEle=Browser.document.createElement('img');
+				this.imageEle.type="image";
+				this.imageEle.style.width=this.imgBack.width;
+				this.imageEle.style.height=this.imgBack.height;
+				this.imageEle.style.zInddex=Render.canvas.style.zIndex+1;
+			};
+			var htmlImg=this.imgBack.drawToCanvas(this.imgBack.width,this.imgBack.height,this.imgBack.x,this.imgBack.y);
 			this.imageEle.src=htmlImg.toBase64("image/png",1);
 			Browser.document.body.appendChild(this.imageEle);
-			Laya.stage.on("resize",this.imageEle,Utils.fitDOMElementInArea,[this.imageEle,this.imgBack,this.imgBack.x,this.imgBack.y,this.imgBack.width,this.imgBack.height]);
-			Utils.fitDOMElementInArea(this.imageEle,this.imgBack,this.imgBack.x,this.imgBack.y,this.imgBack.width,this.imgBack.height);
+			Laya.stage.on("resize",this.imageEle,Utils.fitDOMElementInArea,[this.imageEle,this.imgBack,0,0,this.imgBack.width,this.imgBack.height]);
+			Utils.fitDOMElementInArea(this.imageEle,this.imgBack,0,0,this.imgBack.width,this.imgBack.height);
 			this.imageEle.onclick=function (e){
 				UIMgr.hide(UINameEnum.UIPlay);
 			}
@@ -78543,6 +78557,7 @@ window.Laya=(function(window,document){
 			this.timer.clearAll(this);
 			Browser.removeElement(this.videoElement);
 			Browser.removeElement(this.imageEle);
+			Browser.removeElement(this.buyEle);
 			Laya.stage.off("resize",this.videoElement,Utils.fitDOMElementInArea);
 			Laya.stage.off("resize",this.imageEle,Utils.fitDOMElementInArea);
 		}
@@ -79059,7 +79074,7 @@ window.Laya=(function(window,document){
 		return TextArea;
 	})(TextInput)
 
-	Laya.__init([EventDispatcher,LoaderManager,Context,GameConfig,GraphicAnimation,Timer,SceneUtils,SubmitCMD,SubmitTarget,LocalStorage,CallLater,Render,View,Path,SubmitCanvas]);
+	Laya.__init([EventDispatcher,LoaderManager,Context,GraphicAnimation,Timer,SceneUtils,SubmitCMD,SubmitTarget,Render,LocalStorage,View,CallLater,Path,SubmitCanvas,GameConfig]);
 	/**LayaGameStart**/
 	new Main();
 
